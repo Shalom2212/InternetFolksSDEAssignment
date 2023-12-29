@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id
+  name       String?     @db.VarChar(64)
+  email      String      @unique @db.VarChar(128)
+  password   String      @db.VarChar(64)
+  created_at DateTime
+  Community  Community[]
+  Member     Member[]
+}
+
+model Community {
+  id         String   @id
+  name       String   @db.VarChar(128)
+  slug       String   @unique @db.VarChar(255)
+  ownerrel   User     @relation(fields: [owner], references: [id])
+  owner      String
+  created_at DateTime
+  updated_at DateTime
+  Member     Member[]
+}
+
+model Role {
+  id         String   @id
+  name       String   @db.VarChar(64)
+  created_at DateTime
+  updated_at DateTime
+  Member     Member[]
+}
+
+model Member {
+  id           String    @id
+  communityrel Community @relation(fields: [community], references: [id])
+  community    String
+  userrel      User      @relation(fields: [user], references: [id])
+  user         String
+  rolerel      Role      @relation(fields: [role], references: [id])
+  role         String
+  created_at   DateTime
+}
